@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 
@@ -217,3 +218,23 @@ window.location="orders.html";
 </body>
 
 </html>
+=======
+<h2>Payment Page</h2>
+
+<button onclick="pay()">Pay Now</button>
+
+<script>
+function pay(){
+fetch("/api/orders/create",{
+method:"POST",
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({
+productId:localStorage.getItem("productId"),
+status:"Paid"
+})
+}).then(res=>res.text()).then(()=>{
+alert("Order Confirmed")
+})
+}
+</script>
+>>>>>>> d28b42e3fe3e0919501cd28ee7685f10db97edd1
