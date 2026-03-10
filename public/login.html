@@ -1,27 +1,207 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Login - Craft-Kart</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body{
+font-family:Arial;
+background:#e8d8c3;
+text-align:center;
+margin-top:120px;
+}
+
+.loginBox{
+background:white;
+display:inline-block;
+padding:40px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.2);
+}
+
+input{
+display:block;
+margin:10px auto;
+padding:10px;
+width:260px;
+}
+
+.passwordBox{
+position:relative;
+width:260px;
+margin:10px auto;
+}
+
+.passwordBox input{
+width:100%;
+padding:10px;
+padding-right:45px;
+box-sizing:border-box;
+}
+
+.eyeIcon{
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+color:#7b4b2a;
+transition:all 0.25s ease;
+font-size:16px;
+}
+
+.eyeIcon:hover{
+color:#5e3a20;
+transform:translateY(-50%) scale(1.15);
+}
+
+.eyeIcon.animate{
+transform:translateY(-50%) rotate(180deg);
+}
+
+button{
+padding:10px 20px;
+background:#7b4b2a;
+color:white;
+border:none;
+cursor:pointer;
+width:160px;
+margin-top:10px;
+}
+
+button:hover{
+background:#5e3a20;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="loginBox">
+
 <h2>Login</h2>
 
-<input id="email" placeholder="Email">
-<input id="password" placeholder="Password">
+<form id="loginForm" autocomplete="off">
 
-<button onclick="login()">Login</button>
+<input
+type="email"
+id="email"
+placeholder="Email"
+required
+
+>
+
+<div class="passwordBox">
+
+<input
+type="password"
+id="password"
+placeholder="Password"
+required
+
+>
+
+<i class="fa-solid fa-eye-slash eyeIcon"
+onclick="togglePassword()"
+id="toggleEye"></i>
+
+</div>
+
+<button type="submit">Login</button>
+
+</form>
+
+</div>
 
 <script>
-function login(){
-fetch("/api/auth/login",{
-method:"POST",
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({
-email:email.value,
-password:password.value
-})
-})
-.then(res=>res.json())
-.then(data=>{
-if(data.role=="artisan"){
-window.location="dashboard.html"
+
+function togglePassword(){
+
+const password = document.getElementById("password");
+const eye = document.getElementById("toggleEye");
+
+eye.classList.add("animate");
+
+setTimeout(()=>{
+eye.classList.remove("animate");
+},200);
+
+if(password.type === "password"){
+
+password.type = "text";
+eye.classList.remove("fa-eye-slash");
+eye.classList.add("fa-eye");
+
 }else{
-window.location="products.html"
+
+password.type = "password";
+eye.classList.remove("fa-eye");
+eye.classList.add("fa-eye-slash");
+
 }
+
+}
+
+
+document
+.getElementById("loginForm")
+.addEventListener("submit", async function(e){
+
+e.preventDefault();
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+const res = await fetch("/api/auth/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+email:email,
+password:password
 })
+
+});
+
+const user = await res.json();
+
+if(!user || !user.role){
+
+alert("Invalid login");
+return;
+
 }
+
+localStorage.setItem("userId",user._id);
+localStorage.setItem("name",user.name);
+localStorage.setItem("role",user.role);
+
+if(user.role==="customer"){
+window.location="customer.html";
+}
+
+else if(user.role==="artisan"){
+window.location="artisan.html";
+}
+
+});
+
 </script>
+
+
+
+</body>
+</html>
